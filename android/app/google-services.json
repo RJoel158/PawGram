@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "917517970744",
+    "firebase_url": "https://pawg-52e10-default-rtdb.firebaseio.com",
+    "project_id": "pawg-52e10",
+    "storage_bucket": "pawg-52e10.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917517970744:android:4d479cc9c12107ae3ea5cd",
+        "android_client_info": {
+          "package_name": "com.example.firebase_pet_social"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVqTnemLBb-y9b532LvSqnIwMuJzDnw4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
