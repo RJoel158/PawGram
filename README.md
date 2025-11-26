@@ -1,6 +1,6 @@
-# paw_gram
+# firebase_pet_social
 
-Instagram para mascotas
+A new Flutter project.
 
 ## Getting Started
 
