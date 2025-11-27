@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,20 +17,24 @@ class _CreatePostPageState extends State<CreatePostPage> {
   final _captionController = TextEditingController();
   final _picker = ImagePicker();
   File? _imageFile;
+  XFile? _pickedFile;
   bool _loading = false;
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _imageFile = File(pickedFile.path);
+        _pickedFile = pickedFile;
+        if (!kIsWeb) {
+          _imageFile = File(pickedFile.path);
+        }
       });
     }
   }
 
   Future<void> _createPost() async {
-    if (_imageFile == null) {
-      _showError('Por favor selecciona una imagen');
+    if (_pickedFile == null) {
+      _showError('📷 Selecciona una foto de tu mascota para compartir');
       return;
     }
 
@@ -38,7 +44,13 @@ class _CreatePostPageState extends State<CreatePostPage> {
     setState(() => _loading = true);
 
     try {
-      final imageUrl = await PostService.uploadMedia(_imageFile!, 'jpg');
+      String imageUrl;
+      if (kIsWeb) {
+        final bytes = await _pickedFile!.readAsBytes();
+        imageUrl = await PostService.uploadMediaBytes(bytes, 'jpg');
+      } else {
+        imageUrl = await PostService.uploadMedia(_imageFile!, 'jpg');
+      }
 
       await PostService.createPost(
         userId: currentUser.uid,
@@ -51,14 +63,30 @@ class _CreatePostPageState extends State<CreatePostPage> {
         _captionController.clear();
         setState(() {
           _imageFile = null;
+          _pickedFile = null;
           _loading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('¡Post creado exitosamente!')),
+          const SnackBar(
+            content: Text('✅ ¡Tu post se publicó exitosamente!'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
-      _showError('Error al crear el post: ${e.toString()}');
+      String errorMessage = '😞 No pudimos publicar tu post';
+
+      if (e.toString().contains('permission') ||
+          e.toString().contains('unauthorized')) {
+        errorMessage =
+            '🔒 No tienes permisos para publicar. Verifica tu sesión.';
+      } else if (e.toString().contains('network')) {
+        errorMessage = '📶 Sin conexión a internet. Verifica tu conexión.';
+      } else if (e.toString().contains('storage')) {
+        errorMessage = '💾 Error al subir la imagen. Intenta con otra foto.';
+      }
+
+      _showError(errorMessage);
       setState(() => _loading = false);
     }
   }
@@ -95,10 +123,25 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: _imageFile != null
+                child: _pickedFile != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.file(_imageFile!, fit: BoxFit.cover),
+                        child: kIsWeb
+                            ? FutureBuilder<Uint8List>(
+                                future: _pickedFile!.readAsBytes(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Image.memory(
+                                      snapshot.data!,
+                                      fit: BoxFit.cover,
+                                    );
+                                  }
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                              )
+                            : Image.file(_imageFile!, fit: BoxFit.cover),
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,

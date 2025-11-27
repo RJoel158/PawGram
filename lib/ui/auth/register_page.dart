@@ -19,12 +19,19 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_emailController.text.isEmpty ||
         _passwordController.text.isEmpty ||
         _usernameController.text.isEmpty) {
-      _showError('Por favor completa todos los campos');
+      _showError('⚠️ Por favor completa todos los campos para continuar');
+      return;
+    }
+
+    if (_usernameController.text.length < 3) {
+      _showError('👤 El nombre de usuario debe tener al menos 3 caracteres');
       return;
     }
 
     if (_passwordController.text.length < 6) {
-      _showError('La contraseña debe tener al menos 6 caracteres');
+      _showError(
+        '🔒 La contraseña debe tener al menos 6 caracteres para mayor seguridad',
+      );
       return;
     }
 
@@ -40,7 +47,26 @@ class _RegisterPageState extends State<RegisterPage> {
         Navigator.pop(context);
       }
     } catch (e) {
-      _showError('Error al registrarse: ${e.toString()}');
+      String errorMessage = 'Ocurrió un error al crear tu cuenta';
+
+      if (e.toString().contains('email-already-in-use')) {
+        errorMessage =
+            '📧 Este email ya está registrado. ¿Ya tienes una cuenta? Intenta iniciar sesión.';
+      } else if (e.toString().contains('invalid-email')) {
+        errorMessage =
+            '⚠️ El email ingresado no es válido. Por favor verifica el formato.';
+      } else if (e.toString().contains('weak-password')) {
+        errorMessage =
+            '🔒 Elige una contraseña más segura. Usa al menos 6 caracteres.';
+      } else if (e.toString().contains('operation-not-allowed')) {
+        errorMessage =
+            '🚫 El registro no está disponible en este momento. Intenta más tarde.';
+      } else if (e.toString().contains('network')) {
+        errorMessage =
+            '📶 Sin conexión a internet. Verifica tu conexión y vuelve a intentar.';
+      }
+
+      _showError(errorMessage);
       setState(() => _loading = false);
     }
   }
@@ -79,7 +105,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
-                    hintText: "Username",
+                    hintText: "Elige un nombre de usuario",
+                    labelText: "Nombre de usuario",
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
                   ),
@@ -89,7 +116,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    hintText: "Email",
+                    hintText: "tu@email.com",
+                    labelText: "Email",
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
@@ -99,7 +127,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
-                    hintText: "Password",
+                    hintText: "Mínimo 6 caracteres",
+                    labelText: "Contraseña",
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
@@ -117,7 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: _loading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
-                            "Create Account",
+                            "Crear Cuenta",
                             style: TextStyle(fontSize: 16),
                           ),
                   ),
@@ -128,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Navigator.pop(context);
                   },
                   child: const Text(
-                    "Already have an account? Login",
+                    "¿Ya tienes cuenta? Inicia sesión",
                     style: TextStyle(color: Colors.blue, fontSize: 16),
                   ),
                 ),

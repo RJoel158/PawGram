@@ -26,7 +26,28 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _authService.login(_emailController.text, _passwordController.text);
     } catch (e) {
-      _showError('Error al iniciar sesión: ${e.toString()}');
+      String errorMessage = 'Ocurrió un error al iniciar sesión';
+
+      if (e.toString().contains('user-not-found') ||
+          e.toString().contains('wrong-password') ||
+          e.toString().contains('invalid-credential')) {
+        errorMessage =
+            '📧 Email o contraseña incorrectos. Verifica tus datos e intenta nuevamente.';
+      } else if (e.toString().contains('invalid-email')) {
+        errorMessage =
+            '⚠️ El email ingresado no es válido. Por favor verifica el formato.';
+      } else if (e.toString().contains('user-disabled')) {
+        errorMessage =
+            '🚫 Esta cuenta ha sido deshabilitada. Contacta con soporte.';
+      } else if (e.toString().contains('too-many-requests')) {
+        errorMessage =
+            '⏰ Demasiados intentos fallidos. Por favor espera unos minutos.';
+      } else if (e.toString().contains('network')) {
+        errorMessage =
+            '📶 Sin conexión a internet. Verifica tu conexión y vuelve a intentar.';
+      }
+
+      _showError(errorMessage);
       setState(() => _loading = false);
     }
   }
@@ -69,7 +90,8 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    hintText: "Email",
+                    hintText: "tu@email.com",
+                    labelText: "Email",
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
@@ -79,7 +101,8 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
-                    hintText: "Password",
+                    hintText: "••••••••",
+                    labelText: "Contraseña",
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
@@ -96,7 +119,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: _loading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Login", style: TextStyle(fontSize: 16)),
+                        : const Text(
+                            "Iniciar Sesión",
+                            style: TextStyle(fontSize: 16),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -108,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                   child: const Text(
-                    "Create new account",
+                    "¿No tienes cuenta? Regístrate aquí",
                     style: TextStyle(color: Colors.blue, fontSize: 16),
                   ),
                 ),

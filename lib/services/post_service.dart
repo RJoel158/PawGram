@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -12,6 +13,13 @@ class PostService {
     final id = _uuid.v4();
     final ref = _storage.ref("posts/$id.$ext");
     await ref.putFile(file);
+    return await ref.getDownloadURL();
+  }
+
+  static Future<String> uploadMediaBytes(Uint8List bytes, String ext) async {
+    final id = _uuid.v4();
+    final ref = _storage.ref("posts/$id.$ext");
+    await ref.putData(bytes);
     return await ref.getDownloadURL();
   }
 
@@ -30,11 +38,7 @@ class PostService {
       "mediaUrl": mediaUrl,
       "mediaType": mediaType,
       "createdAt": DateTime.now().millisecondsSinceEpoch,
-      "reactionsCount": {
-        "like": 0,
-        "love": 0,
-        "wow": 0,
-      }
+      "reactionsCount": {"like": 0, "love": 0, "wow": 0},
     });
   }
 

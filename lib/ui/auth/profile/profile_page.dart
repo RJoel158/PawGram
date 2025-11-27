@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/auth_service.dart';
+import 'edit_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -77,7 +79,16 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () {
-                    // TODO: Navegar a editar perfil
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditProfilePage(
+                          currentUsername: username,
+                          currentBio: bio,
+                          currentPhotoUrl: photoUrl,
+                        ),
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.edit),
                   label: const Text("Edit Profile"),
@@ -138,13 +149,33 @@ class ProfilePage extends StatelessWidget {
                         final post = posts[index];
                         final mediaUrl = post['mediaUrl'] ?? '';
 
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                          ),
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
                           child: mediaUrl.isNotEmpty
-                              ? Image.network(mediaUrl, fit: BoxFit.cover)
-                              : const Icon(Icons.image),
+                              ? CachedNetworkImage(
+                                  imageUrl: mediaUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Container(
+                                    color: Colors.grey.shade300,
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                        color: Colors.grey.shade300,
+                                        child: const Icon(
+                                          Icons.image_not_supported,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                )
+                              : Container(
+                                  color: Colors.grey.shade300,
+                                  child: const Icon(Icons.image),
+                                ),
                         );
                       },
                     );
