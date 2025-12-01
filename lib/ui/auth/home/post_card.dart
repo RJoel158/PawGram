@@ -22,7 +22,7 @@ class PostCard extends StatelessWidget {
     this.onLike,
     this.onComment,
   });
-
+//Mejorar
   @override
   Widget build(BuildContext context) {
     return Column(
