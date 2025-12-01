@@ -153,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: ElevatedButton(
                                 onPressed: _loading ? null : _login,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.purple,
+                                  backgroundColor: Colors.brown.shade600,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -181,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: const Text(
                                 "¿No tienes cuenta? Regístrate aquí",
                                 style: TextStyle(
-                                    color: Colors.purple,
+                                    color: Colors.brown,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600),
                               ),
@@ -189,27 +189,39 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
-                      // Círculo con patita que sobresale
+                      // Círculo con imagen que sobresale
                       Positioned(
                         top: 0,
                         child: Container(
                           width: 120,
                           height: 120,
                           decoration: BoxDecoration(
-                            color: Colors.purple,
+                            color: Colors.white,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.purple.withOpacity(0.3),
+                                color: Colors.black.withOpacity(0.15),
                                 blurRadius: 15,
                                 offset: const Offset(0, 5),
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.pets,
-                            size: 60,
-                            color: Colors.white,
+                          child: ClipOval(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Si no encuentra la imagen, muestra el icono
+                                  return const Icon(
+                                    Icons.pets,
+                                    size: 60,
+                                    color: Color(0xFF6D4C41),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
                         ),
                       ),
