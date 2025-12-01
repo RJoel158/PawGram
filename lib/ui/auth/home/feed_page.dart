@@ -61,76 +61,81 @@ class FeedPage extends StatelessWidget {
             (a, b) => (b['createdAt'] ?? 0).compareTo(a['createdAt'] ?? 0),
           );
 
-          return ListView.builder(
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              final postId = post['postId'];
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: ListView.builder(
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final post = posts[index];
+                  final postId = post['postId'];
 
-              return FutureBuilder<DataSnapshot>(
-                future: FirebaseDatabase.instance
-                    .ref('users/${post['userId']}')
-                    .get(),
-                builder: (context, userSnapshot) {
-                  if (!userSnapshot.hasData) {
-                    return const SizedBox();
-                  }
-
-                  final userData = userSnapshot.data!.value as Map?;
-                  final username = userData?['username'] ?? 'Usuario';
-                  final userPhoto = userData?['photoUrl'] ?? '';
-
-                  return StreamBuilder<DatabaseEvent>(
-                    stream: ReactionService.postReactionsStream(postId),
-                    builder: (context, reactionsSnapshot) {
-                      int likesCount = 0;
-                      bool isLiked = false;
-
-                      if (reactionsSnapshot.hasData &&
-                          reactionsSnapshot.data!.snapshot.value != null) {
-                        final reactions =
-                            reactionsSnapshot.data!.snapshot.value as Map;
-                        likesCount = reactions.length;
-                        isLiked = reactions.containsKey(currentUser?.uid);
+                  return FutureBuilder<DataSnapshot>(
+                    future: FirebaseDatabase.instance
+                        .ref('users/${post['userId']}')
+                        .get(),
+                    builder: (context, userSnapshot) {
+                      if (!userSnapshot.hasData) {
+                        return const SizedBox();
                       }
 
-                      return PostCard(
-                        username: username,
-                        userPhotoUrl: userPhoto,
-                        postImageUrl: post['mediaUrl'] ?? '',
-                        caption: post['description'] ?? '',
-                        likes: likesCount,
-                        isLiked: isLiked,
-                        onLike: () async {
-                          if (currentUser != null) {
-                            if (isLiked) {
-                              await ReactionService.removeReaction(
-                                postId: postId,
-                                userId: currentUser.uid,
-                              );
-                            } else {
-                              await ReactionService.addReaction(
-                                postId: postId,
-                                userId: currentUser.uid,
-                                type: 'like',
-                              );
-                            }
+                      final userData = userSnapshot.data!.value as Map?;
+                      final username = userData?['username'] ?? 'Usuario';
+                      final userPhoto = userData?['photoUrl'] ?? '';
+
+                      return StreamBuilder<DatabaseEvent>(
+                        stream: ReactionService.postReactionsStream(postId),
+                        builder: (context, reactionsSnapshot) {
+                          int likesCount = 0;
+                          bool isLiked = false;
+
+                          if (reactionsSnapshot.hasData &&
+                              reactionsSnapshot.data!.snapshot.value != null) {
+                            final reactions =
+                                reactionsSnapshot.data!.snapshot.value as Map;
+                            likesCount = reactions.length;
+                            isLiked = reactions.containsKey(currentUser?.uid);
                           }
-                        },
-                        onComment: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CommentsPage(postId: postId),
-                            ),
+
+                          return PostCard(
+                            username: username,
+                            userPhotoUrl: userPhoto,
+                            postImageUrl: post['mediaUrl'] ?? '',
+                            caption: post['description'] ?? '',
+                            likes: likesCount,
+                            isLiked: isLiked,
+                            onLike: () async {
+                              if (currentUser != null) {
+                                if (isLiked) {
+                                  await ReactionService.removeReaction(
+                                    postId: postId,
+                                    userId: currentUser.uid,
+                                  );
+                                } else {
+                                  await ReactionService.addReaction(
+                                    postId: postId,
+                                    userId: currentUser.uid,
+                                    type: 'like',
+                                  );
+                                }
+                              }
+                            },
+                            onComment: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => CommentsPage(postId: postId),
+                                ),
+                              );
+                            },
                           );
                         },
                       );
                     },
                   );
                 },
-              );
-            },
+              ),
+            ),
           );
         },
       ),
