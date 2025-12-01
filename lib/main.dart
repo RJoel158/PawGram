@@ -43,3 +43,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+// This is the main entry point for the PawGram application.
