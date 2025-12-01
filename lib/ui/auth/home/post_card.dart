@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final String username;
   final String userPhotoUrl;
   final String postImageUrl;
@@ -22,7 +22,68 @@ class PostCard extends StatelessWidget {
     this.onLike,
     this.onComment,
   });
-//Mejorar
+
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard>
+    with SingleTickerProviderStateMixin {
+  bool _showPawAnimation = false;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: 1.2)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 50,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.2, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 50,
+      ),
+    ]).animate(_animationController);
+
+    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
+      ),
+    );
+
+    _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() => _showPawAnimation = false);
+        _animationController.reset();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _handleDoubleTap() {
+    if (widget.onLike != null) {
+      widget.onLike!();
+      setState(() => _showPawAnimation = true);
+      _animationController.forward();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -31,56 +92,84 @@ class PostCard extends StatelessWidget {
         // ----- HEADER -----
         ListTile(
           leading: CircleAvatar(
-            backgroundImage: userPhotoUrl.isNotEmpty
-                ? NetworkImage(userPhotoUrl)
+            backgroundImage: widget.userPhotoUrl.isNotEmpty
+                ? NetworkImage(widget.userPhotoUrl)
                 : null,
             backgroundColor: Colors.grey.shade300,
-            child: userPhotoUrl.isEmpty ? const Icon(Icons.pets) : null,
+            child: widget.userPhotoUrl.isEmpty ? const Icon(Icons.pets) : null,
           ),
           title: Text(
-            username,
+            widget.username,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: const Text("🐾 Pet Lover"),
         ),
 
-        // ----- IMAGE -----
-        AspectRatio(
-          aspectRatio: 1,
-          child: postImageUrl.isNotEmpty
-              ? CachedNetworkImage(
-                  imageUrl: postImageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: Colors.grey.shade200,
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey.shade300,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.image_not_supported,
-                          size: 50,
-                          color: Colors.grey,
+        // ----- IMAGE CON DOBLE TAP -----
+        GestureDetector(
+          onDoubleTap: _handleDoubleTap,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: widget.postImageUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: widget.postImageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                              child: CircularProgressIndicator()),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Error al cargar imagen',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 12,
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.grey.shade300,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.image_not_supported,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Error al cargar imagen',
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                )
-              : Container(
-                  color: Colors.grey.shade300,
-                  child: const Center(child: Icon(Icons.image, size: 50)),
+                      )
+                    : Container(
+                        color: Colors.grey.shade300,
+                        child: const Center(
+                            child: Icon(Icons.image, size: 50)),
+                      ),
+              ),
+              // Animación de huellita
+              if (_showPawAnimation)
+                AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: Icon(
+                          Icons.pets,
+                          size: 120,
+                          color: Colors.brown.shade600,
+                        ),
+                      ),
+                    );
+                  },
                 ),
+            ],
+          ),
         ),
 
         // ----- ACTIONS -----
@@ -88,14 +177,14 @@ class PostCard extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(
-                isLiked ? Icons.favorite : Icons.favorite_border,
-                color: isLiked ? Colors.red : null,
+                widget.isLiked ? Icons.favorite : Icons.favorite_border,
+                color: widget.isLiked ? Colors.red : null,
               ),
-              onPressed: onLike,
+              onPressed: widget.onLike,
             ),
             IconButton(
               icon: const Icon(Icons.chat_bubble_outline),
-              onPressed: onComment,
+              onPressed: widget.onComment,
             ),
           ],
         ),
@@ -104,13 +193,13 @@ class PostCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text(
-            "$likes likes",
+            "${widget.likes} likes",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
 
         // ----- CAPTION -----
-        if (caption.isNotEmpty)
+        if (widget.caption.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             child: RichText(
@@ -118,11 +207,11 @@ class PostCard extends StatelessWidget {
                 style: const TextStyle(color: Colors.black),
                 children: [
                   TextSpan(
-                    text: username,
+                    text: widget.username,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const TextSpan(text: "  "),
-                  TextSpan(text: caption),
+                  TextSpan(text: widget.caption),
                 ],
               ),
             ),
