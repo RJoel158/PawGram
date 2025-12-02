@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'ui/auth/login_page.dart';
 import 'ui/main_screen.dart';
+import 'ui/theme/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'services/auth_service.dart';
 
 void main() async {
@@ -20,9 +22,43 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'PawGram',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
         useMaterial3: true,
-        appBarTheme: AppBarTheme(centerTitle: false, elevation: 0),
+        // Global color scheme using the requested palette.
+        colorScheme: ColorScheme(
+          brightness: Brightness.light,
+          primary: AppColors.paddingtonBlue, // titles / accents
+          onPrimary: AppColors.onPaddington,
+          secondary: AppColors.softBrown, // buttons / surfaces accents
+          onSecondary: AppColors.onPaddington,
+          error: AppColors.softRed,
+          onError: AppColors.onPaddington,
+          background: AppColors.cream,
+          onBackground: AppColors.onCream,
+          surface: Colors.white,
+          onSurface: AppColors.onCream,
+        ),
+        scaffoldBackgroundColor: AppColors.cream,
+        appBarTheme: AppBarTheme(centerTitle: false, elevation: 0, iconTheme: const IconThemeData(color: AppColors.softRed)),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.softBrown,
+            foregroundColor: AppColors.onPaddington,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.paddingtonBlue,
+            side: BorderSide(color: AppColors.paddingtonBlue.withOpacity(0.12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        ),
+        textTheme: GoogleFonts.baloo2TextTheme(ThemeData.light().textTheme).apply(
+          bodyColor: AppColors.paddingtonBlue,
+          displayColor: AppColors.paddingtonBlue,
+        ),
+        // Force icons to the soft red across the app and set AppBar icons
+        iconTheme: const IconThemeData(color: AppColors.softRed),
       ),
       home: StreamBuilder(
         stream: AuthService().authStateChanges,

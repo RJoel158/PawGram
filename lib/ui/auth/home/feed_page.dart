@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../../services/post_service.dart';
@@ -33,7 +34,7 @@ class FeedPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.pets, size: 80, color: Colors.grey),
+                  const Icon(Icons.pets, size: 80, color: AppColors.softRed),
                   SizedBox(height: 20),
                   Text(
                     'No hay posts todavía',

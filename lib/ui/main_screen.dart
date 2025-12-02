@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'auth/home/feed_page.dart';
 import 'auth/posts/create_post_page.dart';
 import 'auth/profile/profile_page.dart';
+import 'theme/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -30,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
                     setState(() => _currentIndex = index);
                   },
                   labelType: NavigationRailLabelType.all,
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColors.cream,
                   elevation: 1,
                   destinations: const [
                     NavigationRailDestination(
@@ -66,6 +67,8 @@ class _MainScreenState extends State<MainScreen> {
               onTap: (index) {
                 setState(() => _currentIndex = index);
               },
+              selectedItemColor: AppColors.paddingtonBlue,
+              unselectedItemColor: AppColors.muted,
               items: const [
                 BottomNavigationBarItem(
                     icon: Icon(Icons.home), label: 'Home'),

@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/auth_service.dart';
 import 'edit_profile_page.dart';
+import '../../theme/app_colors.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -59,9 +60,9 @@ class ProfilePage extends StatelessWidget {
                       backgroundImage: photoUrl.isNotEmpty
                           ? NetworkImage(photoUrl)
                           : null,
-                      backgroundColor: Colors.grey.shade300,
-                      child: photoUrl.isEmpty
-                          ? const Icon(Icons.pets, size: 60)
+                        backgroundColor: AppColors.cream,
+                        child: photoUrl.isEmpty
+                          ? const Icon(Icons.pets, size: 60, color: AppColors.softRed)
                           : null,
                     ),
                     const SizedBox(height: 16),
@@ -149,7 +150,7 @@ class ProfilePage extends StatelessWidget {
                                 Icon(
                                   Icons.image_not_supported_outlined,
                                   size: 60,
-                                  color: Colors.grey.shade400,
+                                  color: AppColors.softRed,
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
@@ -221,13 +222,13 @@ class ProfilePage extends StatelessWidget {
                                         color: Colors.grey.shade300,
                                         child: const Icon(
                                           Icons.image_not_supported,
-                                          color: Colors.grey,
+                                          color: AppColors.softRed,
                                         ),
                                       ),
                                     )
-                                  : Container(
-                                      color: Colors.grey.shade300,
-                                      child: const Icon(Icons.image),
+                                      : Container(
+                                      color: AppColors.cream,
+                                      child: const Icon(Icons.image, color: AppColors.softRed),
                                     ),
                             );
                           },

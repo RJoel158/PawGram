@@ -22,6 +22,7 @@ dependencies:
   uuid: ^4.4.0
   cupertino_icons: ^1.0.8
   image_picker: ^1.0.7
+  google_fonts: ^4.0.3
 
 dev_dependencies:
   flutter_test:
@@ -34,3 +35,4 @@ flutter:
   # Assets (imágenes, iconos, etc)
   assets:
     - assets/images/
+    - web/icons/pawgram.png

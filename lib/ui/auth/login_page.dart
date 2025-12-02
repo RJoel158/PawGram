@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import 'register_page.dart';
+import '../theme/app_colors.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -68,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: AppColors.cream,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -100,13 +101,13 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: Column(
                           children: [
-                            const Text(
+                            Text(
                               "PawGram",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 42,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Billabong',
-                              ),
+                              ).copyWith(color: AppColors.paddingtonBlue),
                             ),
                             const SizedBox(height: 10),
                             const Text(
@@ -128,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 prefixIcon: const Icon(Icons.email),
                                 filled: true,
-                                fillColor: Colors.grey.shade50,
+                                fillColor: AppColors.cream,
                               ),
                             ),
                             const SizedBox(height: 15),
@@ -143,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 prefixIcon: const Icon(Icons.lock),
                                 filled: true,
-                                fillColor: Colors.grey.shade50,
+                                fillColor: AppColors.cream,
                               ),
                             ),
                             const SizedBox(height: 25),
@@ -153,8 +154,8 @@ class _LoginPageState extends State<LoginPage> {
                               child: ElevatedButton(
                                 onPressed: _loading ? null : _login,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.brown.shade600,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: AppColors.softBrown,
+                                  foregroundColor: AppColors.onPaddington,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -178,12 +179,11 @@ class _LoginPageState extends State<LoginPage> {
                                       builder: (_) => RegisterPage()),
                                 );
                               },
-                              child: const Text(
+                              child: Text(
                                 "¿No tienes cuenta? Regístrate aquí",
-                                style: TextStyle(
-                                    color: Colors.brown,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.w600)
+                                    .copyWith(color: AppColors.softBrown),
                               ),
                             ),
                           ],
@@ -207,21 +207,21 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                           child: ClipOval(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Image.asset(
-                                'assets/images/logo.png',
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  // Si no encuentra la imagen, muestra el icono
-                                  return const Icon(
-                                    Icons.pets,
-                                    size: 60,
-                                    color: Color(0xFF6D4C41),
-                                  );
-                                },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Image.asset(
+                                  'web/icons/pawgram.png',
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    // Si no encuentra la imagen, muestra el icono
+                                    return Icon(
+                                      Icons.pets,
+                                      size: 60,
+                                      color: AppColors.softBrown,
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
                           ),
                         ),
                       ),

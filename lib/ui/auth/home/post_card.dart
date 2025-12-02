@@ -111,44 +111,54 @@ class _PostCardState extends State<PostCard>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: widget.postImageUrl.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: widget.postImageUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                              child: CircularProgressIndicator()),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey.shade300,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.image_not_supported,
-                                size: 50,
-                                color: Colors.grey,
+              // Polaroid-style white margin around the post image
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Container(
+                  color: Colors.white, // pure white margin/frame
+                  padding: const EdgeInsets.all(8),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: widget.postImageUrl.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: CachedNetworkImage(
+                              imageUrl: widget.postImageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: Colors.grey.shade200,
+                                child: const Center(
+                                    child: CircularProgressIndicator()),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Error al cargar imagen',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
+                              errorWidget: (context, url, error) => Container(
+                                color: Colors.grey.shade300,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.image_not_supported,
+                                      size: 50,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Error al cargar imagen',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            ),
+                          )
+                        : Container(
+                            color: Colors.grey.shade300,
+                            child: const Center(child: Icon(Icons.image, size: 50)),
                           ),
-                        ),
-                      )
-                    : Container(
-                        color: Colors.grey.shade300,
-                        child: const Center(
-                            child: Icon(Icons.image, size: 50)),
-                      ),
+                  ),
+                ),
               ),
               // Animación de huellita
               if (_showPawAnimation)
