@@ -47,7 +47,7 @@ class FeedPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.pets, size: 80, color: AppColors.softRed),
+                  Icon(Icons.pets, size: 80, color: AppColors.softRed),
                   SizedBox(height: 20),
                   Text(
                     'No hay posts todavía',

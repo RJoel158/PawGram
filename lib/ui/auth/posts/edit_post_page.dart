@@ -112,7 +112,7 @@ class _EditPostPageState extends State<EditPostPage> {
                 ),
                 const SizedBox(height: 20),
                 DropdownButtonFormField<PostTag>(
-                  value: _selectedTag,
+                  initialValue: _selectedTag,
                   decoration: InputDecoration(
                     labelText: "Categoría de mascota",
                     prefixIcon: const Icon(Icons.pets),

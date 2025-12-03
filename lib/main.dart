@@ -32,9 +32,7 @@ class MyApp extends StatelessWidget {
           onSecondary: AppColors.onPaddington,
           error: AppColors.softRed,
           onError: AppColors.onPaddington,
-          background: AppColors.cream,
-          onBackground: AppColors.onCream,
-          surface: Colors.white,
+          surface: AppColors.cream,
           onSurface: AppColors.onCream,
         ),
         scaffoldBackgroundColor: AppColors.cream,
@@ -49,7 +47,7 @@ class MyApp extends StatelessWidget {
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.paddingtonBlue,
-            side: BorderSide(color: AppColors.paddingtonBlue.withOpacity(0.12)),
+            side: BorderSide(color: AppColors.paddingtonBlue.withValues(alpha: 0.12)),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),

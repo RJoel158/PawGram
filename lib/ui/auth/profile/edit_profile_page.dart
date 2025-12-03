@@ -123,10 +123,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         errorMessage = '💾 Error al subir la foto. Intenta con otra imagen.';
       }
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(errorMessage)));
-      setState(() => _loading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+        setState(() => _loading = false);
+      }
     }
   }
 
