@@ -49,6 +49,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
       return;
     }
 
+    if (_captionController.text.trim().length > 150) {
+      _showError('La descripción no puede tener más de 150 caracteres');
+      return;
+    }
+
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
 
