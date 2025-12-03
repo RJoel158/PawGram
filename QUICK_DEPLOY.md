@@ -3,6 +3,7 @@
 ## Opción 1: Deploy desde GitHub (MÁS FÁCIL) ⭐
 
 ### Paso 1: Push a GitHub
+
 ```bash
 git add .
 git commit -m "Ready for Vercel deployment"
@@ -10,6 +11,7 @@ git push origin main
 ```
 
 ### Paso 2: Conectar con Vercel
+
 1. Ve a https://vercel.com/new
 2. Click en "Continue with GitHub"
 3. Selecciona el repositorio `PawGram`
@@ -20,12 +22,15 @@ git push origin main
    - Siguientes deploys: 2-3 minutos
 
 ### Paso 3: Configurar Firebase
+
 Una vez que tengas tu URL de Vercel (ej: `pawgram.vercel.app`):
 
 1. **Firebase Console** → Authentication → Settings → Authorized domains
+
    - Agrega: `pawgram.vercel.app` (tu dominio real)
 
 2. **Actualizar CORS** - Edita `cors.json`:
+
    ```json
    {
      "origin": ["https://pawgram.vercel.app", "http://localhost:*"],
@@ -39,7 +44,8 @@ Una vez que tengas tu URL de Vercel (ej: `pawgram.vercel.app`):
    gsutil cors set cors.json gs://pawg-52e10.firebasestorage.app
    ```
 
-### ✅ ¡Listo! 
+### ✅ ¡Listo!
+
 Tu app estará en: `https://pawgram.vercel.app`
 
 ---
@@ -47,11 +53,13 @@ Tu app estará en: `https://pawgram.vercel.app`
 ## Opción 2: Deploy con Vercel CLI
 
 ### Instalar Vercel CLI
+
 ```bash
 npm install -g vercel
 ```
 
 ### Deploy
+
 ```bash
 vercel login
 vercel --prod
@@ -62,6 +70,7 @@ vercel --prod
 ## Verificar que todo funciona
 
 Después del deploy, prueba:
+
 - [ ] Registrar usuario
 - [ ] Login
 - [ ] Subir foto (verificar CORS)
@@ -75,18 +84,23 @@ Después del deploy, prueba:
 ## Problemas comunes
 
 ### ❌ Imágenes no cargan
+
 **Solución**: Verifica que agregaste el dominio de Vercel en Firebase y aplicaste CORS
 
 ### ❌ Build falla
-**Solución**: 
+
+**Solución**:
+
 - El primer build tarda 10-15 minutos (instalando Flutter)
 - Revisa los logs en Vercel para ver el progreso
 - Si falla, intenta "Redeploy" desde el dashboard de Vercel
 
 ### ❌ "flutter: command not found"
+
 **Solución**: Asegúrate que `build.sh` tiene permisos de ejecución y `vercel.json` está configurado correctamente
 
 ### ❌ Auth no funciona
+
 **Solución**: Agrega el dominio de Vercel en Firebase Console → Authentication → Authorized domains
 
 ---
@@ -100,7 +114,8 @@ Después del deploy, prueba:
 
 ---
 
-**Tiempo estimado**: 
+**Tiempo estimado**:
+
 - Primer deploy: 10-15 minutos (instalando Flutter)
 - Siguientes deploys: 2-3 minutos
-**Costo**: $0 (100% gratis con Vercel + Firebase free tier)
+  **Costo**: $0 (100% gratis con Vercel + Firebase free tier)

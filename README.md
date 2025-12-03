@@ -20,7 +20,7 @@ Red social diseñada especialmente para compartir los momentos más adorables de
 
 ## 🚀 Demo en vivo
 
-🔗 **[Ver Demo](https://tu-proyecto.vercel.app)** *(Actualizar después del deploy)*
+🔗 **[Ver Demo](https://tu-proyecto.vercel.app)** _(Actualizar después del deploy)_
 
 ## 🛠️ Tecnologías
 
@@ -29,7 +29,7 @@ Red social diseñada especialmente para compartir los momentos más adorables de
 - **Auth**: Firebase Authentication
 - **Storage**: Firebase Storage (con CORS configurado)
 - **Hosting**: Vercel
-- **Packages**: 
+- **Packages**:
   - `cached_network_image` - Optimización de imágenes
   - `image_picker` - Selección de fotos (web + mobile)
   - `firebase_core`, `firebase_auth`, `firebase_database`, `firebase_storage`
@@ -44,22 +44,26 @@ Red social diseñada especialmente para compartir los momentos más adorables de
 ## 🏃 Instalación y desarrollo
 
 1. **Clonar el repositorio**
+
 ```bash
 git clone https://github.com/RJoel158/PawGram.git
 cd PawGram
 ```
 
 2. **Instalar dependencias**
+
 ```bash
 flutter pub get
 ```
 
 3. **Ejecutar en web**
+
 ```bash
 flutter run -d chrome
 ```
 
 4. **Ejecutar en Android/iOS**
+
 ```bash
 flutter run
 ```
@@ -87,10 +91,12 @@ vercel --prod
 ## 🔧 Configuración de Firebase
 
 1. **Authentication**
+
    - Habilita Email/Password en Firebase Console
    - Agrega tu dominio de Vercel en "Authorized domains"
 
 2. **Realtime Database**
+
    - Configura las reglas de seguridad (ver `firebase.json`)
 
 3. **Storage**
@@ -159,6 +165,7 @@ Este proyecto es de código abierto y está disponible bajo la [MIT License](LIC
 ## 👨‍💻 Autor
 
 **RJoel158**
+
 - GitHub: [@RJoel158](https://github.com/RJoel158)
 
 ## 🙏 Agradecimientos

@@ -5,6 +5,7 @@
 ### 1. Preparar el proyecto
 
 Asegúrate de que todos los archivos estén listos:
+
 - ✅ `vercel.json` - Configuración de Vercel
 - ✅ `build.sh` - Script de construcción
 - ✅ `.gitignore` actualizado
@@ -52,6 +53,7 @@ vercel --prod
 ### 6. Variables de entorno (si usas claves privadas)
 
 Si tienes claves de API privadas, agrégalas en:
+
 - Vercel Dashboard → Settings → Environment Variables
 
 ### 7. Configuración de dominio personalizado (Opcional)
@@ -74,29 +76,36 @@ build/web/
 ## Solución de problemas
 
 ### Error: Flutter no encontrado
+
 - Vercel instalará Flutter automáticamente usando el `build.sh`
 - El proceso puede tardar 2-5 minutos en el primer deploy
 
 ### Error: CORS en Firebase Storage
+
 - Verifica que el dominio de Vercel esté en Firebase authorized domains
 - Revisa que CORS esté configurado correctamente en Storage
 
 ### Error: Rutas no funcionan
+
 - Flutter web usa rutas hash por defecto (`/#/route`)
 - Si quieres rutas limpias, configura rewrites en `vercel.json`
 
 ## Optimizaciones para producción
 
 ### 1. Comprimir assets
+
 Ya incluido en `flutter build web --release`
 
 ### 2. Cachear recursos estáticos
+
 Vercel lo hace automáticamente
 
 ### 3. Usar CDN
+
 Vercel CDN está activo por defecto
 
 ### 4. Minificación
+
 Flutter minifica automáticamente en modo release
 
 ## Comandos útiles
@@ -126,6 +135,7 @@ vercel remove [deployment-url]
 ## URL de producción
 
 Después del deploy, tu app estará en:
+
 ```
 https://tu-proyecto.vercel.app
 ```
@@ -133,6 +143,7 @@ https://tu-proyecto.vercel.app
 ## Monitoreo
 
 Vercel provee:
+
 - Analytics de tráfico
 - Error tracking
 - Performance metrics
