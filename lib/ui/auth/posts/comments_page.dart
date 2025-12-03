@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../../services/comments_service.dart';
+import '../profile/public_profile_page.dart';
 
 class CommentsPage extends StatefulWidget {
   final String postId;
@@ -29,7 +30,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
   Future<void> _addComment() async {
     final text = _commentController.text.trim();
-    
+
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -116,60 +117,94 @@ class _CommentsPageState extends State<CommentsPage> {
                       );
                     }
 
-                final commentsMap = snapshot.data!.snapshot.value as Map;
-                final comments = commentsMap.entries.map((e) {
-                  final data = Map<String, dynamic>.from(e.value as Map);
-                  data['commentId'] = e.key;
-                  return data;
-                }).toList();
+                    final commentsMap = snapshot.data!.snapshot.value as Map;
+                    final comments = commentsMap.entries.map((e) {
+                      final data = Map<String, dynamic>.from(e.value as Map);
+                      data['commentId'] = e.key;
+                      return data;
+                    }).toList();
 
-                comments.sort(
-                  (a, b) =>
-                      (a['createdAt'] ?? 0).compareTo(b['createdAt'] ?? 0),
-                );
+                    comments.sort(
+                      (a, b) =>
+                          (a['createdAt'] ?? 0).compareTo(b['createdAt'] ?? 0),
+                    );
 
-                return ListView.builder(
-                  itemCount: comments.length,
-                  itemBuilder: (context, index) {
-                    final comment = comments[index];
+                    return ListView.builder(
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        final comment = comments[index];
 
-                    return FutureBuilder<DataSnapshot>(
-                      future: FirebaseDatabase.instance
-                          .ref('users/${comment['userId']}')
-                          .get(),
-                      builder: (context, userSnapshot) {
-                        String username = 'Usuario';
-                        String photoUrl = '';
+                        return FutureBuilder<DataSnapshot>(
+                          future: FirebaseDatabase.instance
+                              .ref('users/${comment['userId']}')
+                              .get(),
+                          builder: (context, userSnapshot) {
+                            String username = 'Usuario';
+                            String photoUrl = '';
 
-                        if (userSnapshot.hasData &&
-                            userSnapshot.data!.value != null) {
-                          final userData = userSnapshot.data!.value as Map?;
-                          username = userData?['username'] ?? 'Usuario';
-                          photoUrl = userData?['photoUrl'] ?? '';
-                        }
+                            if (userSnapshot.hasData &&
+                                userSnapshot.data!.value != null) {
+                              final userData = userSnapshot.data!.value as Map?;
+                              username = userData?['username'] ?? 'Usuario';
+                              photoUrl = userData?['photoUrl'] ?? '';
+                            }
 
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: photoUrl.isNotEmpty
-                                ? NetworkImage(photoUrl)
-                                : null,
-                            backgroundColor: Colors.grey.shade300,
-                            child: photoUrl.isEmpty
-                                ? const Icon(Icons.person)
-                                : null,
-                          ),
-                          title: Text(
-                            username,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(comment['text'] ?? ''),
+                            return ListTile(
+                              leading: GestureDetector(
+                                onTap: () {
+                                  final currentUser =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (currentUser?.uid != comment['userId']) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => PublicProfilePage(
+                                          userId: comment['userId'],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: CircleAvatar(
+                                  backgroundImage: photoUrl.isNotEmpty
+                                      ? NetworkImage(photoUrl)
+                                      : null,
+                                  backgroundColor: Colors.grey.shade300,
+                                  child: photoUrl.isEmpty
+                                      ? const Icon(Icons.person)
+                                      : null,
+                                ),
+                              ),
+                              title: GestureDetector(
+                                onTap: () {
+                                  final currentUser =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (currentUser?.uid != comment['userId']) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => PublicProfilePage(
+                                          userId: comment['userId'],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  username,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              subtitle: Text(comment['text'] ?? ''),
+                            );
+                          },
                         );
                       },
                     );
                   },
-                );
-              },
-            ),
+                ),
               ),
               // Input
               SafeArea(
@@ -208,7 +243,8 @@ class _CommentsPageState extends State<CommentsPage> {
                                 : Colors.grey,
                             onPressed: _addComment,
                             style: IconButton.styleFrom(
-                              backgroundColor: _charCount > 0 && _charCount <= 150
+                              backgroundColor:
+                                  _charCount > 0 && _charCount <= 150
                                   ? Colors.brown.shade50
                                   : Colors.grey.shade100,
                             ),

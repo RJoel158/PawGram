@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../../services/reaction_service.dart';
+import '../../../services/post_service.dart';
 import '../posts/comments_page.dart';
+import '../posts/edit_post_page.dart';
 import '../home/post_card.dart';
 
 class UserFeedPage extends StatelessWidget {
   final String userId;
   final int initialIndex;
 
-  const UserFeedPage({
-    super.key,
-    required this.userId,
-    this.initialIndex = 0,
-  });
+  const UserFeedPage({super.key, required this.userId, this.initialIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +36,7 @@ class UserFeedPage extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
-            return const Center(
-              child: Text('No hay publicaciones'),
-            );
+            return const Center(child: Text('No hay publicaciones'));
           }
 
           final postsMap = snapshot.data!.snapshot.value as Map;
@@ -92,8 +88,7 @@ class UserFeedPage extends StatelessWidget {
                               final reactions =
                                   reactionsSnapshot.data!.snapshot.value as Map;
                               likesCount = reactions.length;
-                              isLiked =
-                                  reactions.containsKey(currentUser?.uid);
+                              isLiked = reactions.containsKey(currentUser?.uid);
                             }
 
                             return PostCard(
@@ -103,6 +98,9 @@ class UserFeedPage extends StatelessWidget {
                               caption: post['description'] ?? '',
                               likes: likesCount,
                               isLiked: isLiked,
+                              tag: post['tag'] as String?,
+                              postUserId: post['userId'] as String?,
+                              postId: postId,
                               onLike: () async {
                                 if (currentUser != null) {
                                   if (isLiked) {
@@ -128,6 +126,54 @@ class UserFeedPage extends StatelessWidget {
                                   ),
                                 );
                               },
+                              onEdit: currentUser?.uid == post['userId']
+                                  ? () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => EditPostPage(
+                                            postId: postId,
+                                            currentCaption:
+                                                post['description'] ?? '',
+                                            currentTag: post['tag'] ?? 'other',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  : null,
+                              onDelete: currentUser?.uid == post['userId']
+                                  ? () async {
+                                      try {
+                                        await PostService.deletePost(postId);
+                                        if (context.mounted) {
+                                          Navigator.pop(context);
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                '🗑️ Publicación eliminada',
+                                              ),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                '😞 Error al eliminar',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    }
+                                  : null,
                             );
                           },
                         );

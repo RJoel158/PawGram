@@ -5,7 +5,9 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../../services/post_service.dart';
 import '../../../services/reaction_service.dart';
 import '../posts/comments_page.dart';
+import '../posts/edit_post_page.dart';
 import 'post_card.dart';
+import 'search_page.dart';
 
 class FeedPage extends StatelessWidget {
   const FeedPage({super.key});
@@ -20,7 +22,18 @@ class FeedPage extends StatelessWidget {
           "PawGram",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
         ),
-        actions: [IconButton(icon: const Icon(Icons.pets), onPressed: () {})],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Buscar por usuario o etiqueta',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<DatabaseEvent>(
         stream: PostService.feedStream(),
@@ -105,6 +118,9 @@ class FeedPage extends StatelessWidget {
                             caption: post['description'] ?? '',
                             likes: likesCount,
                             isLiked: isLiked,
+                            tag: post['tag'] as String?,
+                            postUserId: post['userId'] as String?,
+                            postId: postId,
                             onLike: () async {
                               if (currentUser != null) {
                                 if (isLiked) {
@@ -129,6 +145,53 @@ class FeedPage extends StatelessWidget {
                                 ),
                               );
                             },
+                            onEdit: currentUser?.uid == post['userId']
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => EditPostPage(
+                                          postId: postId,
+                                          currentCaption:
+                                              post['description'] ?? '',
+                                          currentTag: post['tag'] ?? 'other',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            onDelete: currentUser?.uid == post['userId']
+                                ? () async {
+                                    try {
+                                      await PostService.deletePost(postId);
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              '🗑️ Publicación eliminada',
+                                            ),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              '😞 Error al eliminar',
+                                            ),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  }
+                                : null,
                           );
                         },
                       );

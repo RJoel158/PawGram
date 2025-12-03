@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../services/post_service.dart';
+import '../../../models/post_tag.dart';
 
 class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});
@@ -19,6 +20,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   File? _imageFile;
   XFile? _pickedFile;
   bool _loading = false;
+  PostTag _selectedTag = PostTag.availableTags[0]; // Etiqueta por defecto
   int _charCount = 0;
 
   @override
@@ -73,6 +75,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
         description: _captionController.text.trim(),
         mediaUrl: imageUrl,
         mediaType: 'image',
+        tag: _selectedTag.id,
       );
 
       if (mounted) {
@@ -81,6 +84,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           _imageFile = null;
           _pickedFile = null;
           _loading = false;
+          _selectedTag = PostTag.availableTags[0];
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -142,10 +146,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                        width: 2,
-                      ),
+                      border: Border.all(color: Colors.grey.shade300, width: 2),
                     ),
                     child: _pickedFile != null
                         ? ClipRRect(
@@ -212,6 +213,32 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     ),
                   ),
                   maxLines: 4,
+                ),
+                const SizedBox(height: 20),
+                DropdownButtonFormField<PostTag>(
+                  value: _selectedTag,
+                  decoration: InputDecoration(
+                    labelText: "Categoría de mascota",
+                    prefixIcon: const Icon(Icons.pets),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                  items: PostTag.availableTags.map((tag) {
+                    return DropdownMenuItem<PostTag>(
+                      value: tag,
+                      child: Text(tag.displayName),
+                    );
+                  }).toList(),
+                  onChanged: (PostTag? newTag) {
+                    if (newTag != null) {
+                      setState(() {
+                        _selectedTag = newTag;
+                      });
+                    }
+                  },
                 ),
                 const SizedBox(height: 24),
                 SizedBox(

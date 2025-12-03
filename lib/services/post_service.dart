@@ -28,6 +28,7 @@ class PostService {
     required String description,
     required String mediaUrl,
     required String mediaType,
+    String? tag,
   }) async {
     final id = _uuid.v4();
 
@@ -37,6 +38,7 @@ class PostService {
       "description": description,
       "mediaUrl": mediaUrl,
       "mediaType": mediaType,
+      "tag": tag ?? 'other',
       "createdAt": DateTime.now().millisecondsSinceEpoch,
       "reactionsCount": {"like": 0, "love": 0, "wow": 0},
     });

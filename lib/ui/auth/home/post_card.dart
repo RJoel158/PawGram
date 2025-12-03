@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../models/post_tag.dart';
+import '../../auth/profile/public_profile_page.dart';
 
 class PostCard extends StatefulWidget {
   final String username;
@@ -8,8 +11,13 @@ class PostCard extends StatefulWidget {
   final String caption;
   final int likes;
   final bool isLiked;
+  final String? tag;
+  final String? postUserId;
+  final String? postId;
   final VoidCallback? onLike;
   final VoidCallback? onComment;
+  final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const PostCard({
     super.key,
@@ -19,8 +27,13 @@ class PostCard extends StatefulWidget {
     required this.caption,
     required this.likes,
     this.isLiked = false,
+    this.tag,
+    this.postUserId,
+    this.postId,
     this.onLike,
     this.onComment,
+    this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -44,13 +57,17 @@ class _PostCardState extends State<PostCard>
 
     _scaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 0.0, end: 1.2)
-            .chain(CurveTween(curve: Curves.easeOut)),
+        tween: Tween<double>(
+          begin: 0.0,
+          end: 1.2,
+        ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 50,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.2, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeIn)),
+        tween: Tween<double>(
+          begin: 1.2,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeIn)),
         weight: 50,
       ),
     ]).animate(_animationController);
@@ -116,6 +133,93 @@ class _PostCardState extends State<PostCard>
     );
   }
 
+  Widget? _buildOptionsMenu(BuildContext context) {
+    // Solo mostrar menú si hay callbacks de editar o eliminar
+    if (widget.onEdit == null && widget.onDelete == null) {
+      return null;
+    }
+
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (value) {
+        if (value == 'edit' && widget.onEdit != null) {
+          widget.onEdit!();
+        } else if (value == 'delete' && widget.onDelete != null) {
+          _confirmDelete(context);
+        }
+      },
+      itemBuilder: (context) => [
+        if (widget.onEdit != null)
+          const PopupMenuItem(
+            value: 'edit',
+            child: Row(
+              children: [
+                Icon(Icons.edit, size: 20),
+                SizedBox(width: 8),
+                Text('Editar'),
+              ],
+            ),
+          ),
+        if (widget.onDelete != null)
+          const PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                Icon(Icons.delete, size: 20, color: Colors.red),
+                SizedBox(width: 8),
+                Text('Eliminar', style: TextStyle(color: Colors.red)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar publicación'),
+        content: const Text(
+          '¿Estás seguro de que quieres eliminar esta publicación? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              if (widget.onDelete != null) {
+                widget.onDelete!();
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToProfile(BuildContext context) {
+    if (widget.postUserId != null) {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      // Si es el perfil del usuario actual, no navegar (ya está en su perfil)
+      if (currentUser?.uid == widget.postUserId) {
+        return;
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PublicProfilePage(userId: widget.postUserId!),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -123,18 +227,27 @@ class _PostCardState extends State<PostCard>
       children: [
         // ----- HEADER -----
         ListTile(
-          leading: CircleAvatar(
-            backgroundImage: widget.userPhotoUrl.isNotEmpty
-                ? NetworkImage(widget.userPhotoUrl)
-                : null,
-            backgroundColor: Colors.grey.shade300,
-            child: widget.userPhotoUrl.isEmpty ? const Icon(Icons.pets) : null,
+          leading: GestureDetector(
+            onTap: () => _navigateToProfile(context),
+            child: CircleAvatar(
+              backgroundImage: widget.userPhotoUrl.isNotEmpty
+                  ? NetworkImage(widget.userPhotoUrl)
+                  : null,
+              backgroundColor: Colors.grey.shade300,
+              child: widget.userPhotoUrl.isEmpty
+                  ? const Icon(Icons.pets)
+                  : null,
+            ),
           ),
-          title: Text(
-            widget.username,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          title: GestureDetector(
+            onTap: () => _navigateToProfile(context),
+            child: Text(
+              widget.username,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
-          subtitle: const Text("🐾 Pet Lover"),
+          subtitle: Text(PostTag.fromId(widget.tag ?? 'other').displayName),
+          trailing: _buildOptionsMenu(context),
         ),
 
         // ----- IMAGE CON DOBLE TAP Y CLIC -----
@@ -161,7 +274,8 @@ class _PostCardState extends State<PostCard>
                               placeholder: (context, url) => Container(
                                 color: Colors.grey.shade200,
                                 child: const Center(
-                                    child: CircularProgressIndicator()),
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: Colors.grey.shade300,
@@ -188,7 +302,9 @@ class _PostCardState extends State<PostCard>
                           )
                         : Container(
                             color: Colors.grey.shade300,
-                            child: const Center(child: Icon(Icons.image, size: 50)),
+                            child: const Center(
+                              child: Icon(Icons.image, size: 50),
+                            ),
                           ),
                   ),
                 ),
