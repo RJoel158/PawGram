@@ -29,12 +29,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
   File? _imageFile;
   XFile? _pickedFile;
   bool _loading = false;
+  int _bioCharCount = 0;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.currentUsername);
     _bioController = TextEditingController(text: widget.currentBio);
+    _bioCharCount = widget.currentBio.length;
+    
+    _bioController.addListener(() {
+      setState(() {
+        _bioCharCount = _bioController.text.length;
+      });
+    });
   }
 
   Future<void> _pickImage() async {
@@ -52,6 +60,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _saveProfile() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
+
+    // Validaciones
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El nombre de usuario no puede estar vacío'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (_bioController.text.length > 90) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('La biografía no puede tener más de 90 caracteres'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
     setState(() => _loading = true);
 
@@ -150,64 +179,96 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Profile")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Stack(
+      appBar: AppBar(title: const Text("Editar Perfil")),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Column(
               children: [
-                _buildProfileImage(),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    radius: 18,
-                    backgroundColor: Colors.purple,
-                    child: IconButton(
-                      icon: const Icon(Icons.camera_alt, size: 18),
-                      color: Colors.white,
-                      onPressed: _pickImage,
+                const SizedBox(height: 20),
+                Stack(
+                  children: [
+                    _buildProfileImage(),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Colors.brown.shade600,
+                        child: IconButton(
+                          icon: const Icon(Icons.camera_alt, size: 18),
+                          color: Colors.white,
+                          onPressed: _pickImage,
+                          padding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: "Nombre de usuario",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.person),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                TextField(
+                  controller: _bioController,
+                  maxLines: 3,
+                  maxLength: 90,
+                  decoration: InputDecoration(
+                    labelText: "Biografía",
+                    hintText: "Cuéntanos sobre tu mascota...",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.edit_note),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                    counterText: '$_bioCharCount/90',
+                    counterStyle: TextStyle(
+                      color: _bioCharCount > 90 ? Colors.red : Colors.grey,
                     ),
                   ),
                 ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _saveProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown.shade600,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: _loading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Guardar Cambios",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 30),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Username",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
-              ),
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: _bioController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: "Bio",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.edit_note),
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _loading ? null : _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  foregroundColor: Colors.white,
-                ),
-                child: _loading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Save", style: TextStyle(fontSize: 16)),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

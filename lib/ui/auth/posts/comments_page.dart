@@ -33,7 +33,7 @@ class _CommentsPageState extends State<CommentsPage> {
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('⚠️ No puedes publicar un comentario vacío'),
+          content: Text('No puedes publicar un comentario vacío'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -43,7 +43,7 @@ class _CommentsPageState extends State<CommentsPage> {
     if (text.length > 150) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✏️ El comentario no puede tener más de 150 caracteres'),
+          content: Text('El comentario no puede tener más de 150 caracteres'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -70,23 +70,51 @@ class _CommentsPageState extends State<CommentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Comments")),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<DatabaseEvent>(
-              stream: CommentService.commentsStream(widget.postId),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+      appBar: AppBar(title: const Text("Comentarios")),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder<DatabaseEvent>(
+                  stream: CommentService.commentsStream(widget.postId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                if (!snapshot.hasData ||
-                    snapshot.data!.snapshot.value == null) {
-                  return const Center(
-                    child: Text('No hay comentarios todavía'),
-                  );
-                }
+                    if (!snapshot.hasData ||
+                        snapshot.data!.snapshot.value == null) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 60,
+                              color: Colors.grey.shade400,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No hay comentarios todavía',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '¡Sé el primero en comentar!',
+                              style: TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
 
                 final commentsMap = snapshot.data!.snapshot.value as Map;
                 final comments = commentsMap.entries.map((e) {
@@ -142,46 +170,58 @@ class _CommentsPageState extends State<CommentsPage> {
                 );
               },
             ),
-          ),
-          // Input
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Row(
+              ),
+              // Input
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _commentController,
-                          maxLength: 150,
-                          decoration: InputDecoration(
-                            hintText: "Agrega un comentario...",
-                            border: const OutlineInputBorder(),
-                            counterText: '$_charCount/150',
-                            counterStyle: TextStyle(
-                              color: _charCount > 150
-                                  ? Colors.red
-                                  : Colors.grey,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _commentController,
+                              maxLength: 150,
+                              decoration: InputDecoration(
+                                hintText: "Agrega un comentario...",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey.shade50,
+                                counterText: '$_charCount/150',
+                                counterStyle: TextStyle(
+                                  color: _charCount > 150
+                                      ? Colors.red
+                                      : Colors.grey,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.send),
-                        color: _charCount > 0 && _charCount <= 150
-                            ? Colors.brown.shade600
-                            : Colors.grey,
-                        onPressed: _addComment,
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.send),
+                            color: _charCount > 0 && _charCount <= 150
+                                ? Colors.brown.shade600
+                                : Colors.grey,
+                            onPressed: _addComment,
+                            style: IconButton.styleFrom(
+                              backgroundColor: _charCount > 0 && _charCount <= 150
+                                  ? Colors.brown.shade50
+                                  : Colors.grey.shade100,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
