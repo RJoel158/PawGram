@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/auth_service.dart';
 import 'edit_profile_page.dart';
+import 'user_feed_page.dart';
 import '../../theme/app_colors.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -203,33 +204,48 @@ class ProfilePage extends StatelessWidget {
                             final post = posts[index];
                             final mediaUrl = post['mediaUrl'] ?? '';
 
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: mediaUrl.isNotEmpty
-                                  ? CachedNetworkImage(
-                                      imageUrl: mediaUrl,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => Container(
-                                        color: Colors.grey.shade200,
-                                        child: const Center(
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => UserFeedPage(
+                                      userId: currentUser.uid,
+                                      initialIndex: index,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: mediaUrl.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: mediaUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            Container(
+                                          color: Colors.grey.shade200,
+                                          child: const Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                        color: Colors.grey.shade300,
-                                        child: const Icon(
-                                          Icons.image_not_supported,
-                                          color: AppColors.softRed,
+                                        errorWidget: (context, url, error) =>
+                                            Container(
+                                          color: Colors.grey.shade300,
+                                          child: const Icon(
+                                            Icons.image_not_supported,
+                                            color: AppColors.softRed,
+                                          ),
                                         ),
+                                      )
+                                    : Container(
+                                        color: AppColors.cream,
+                                        child: const Icon(Icons.image,
+                                            color: AppColors.softRed),
                                       ),
-                                    )
-                                      : Container(
-                                      color: AppColors.cream,
-                                      child: const Icon(Icons.image, color: AppColors.softRed),
-                                    ),
+                              ),
                             );
                           },
                         );
