@@ -1,0 +1,36 @@
+# Archivos y directorios que Vercel debe ignorar
+
+# Flutter/Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Android/iOS/Desktop
+android/
+ios/
+linux/
+macos/
+windows/
+
+# Tests
+test/
+coverage/
+
+# Git
+.git/
+.gitignore
+
+# Docs (opcional - comenta si quieres que estén disponibles)
+SETUP.md
+CORS_SETUP.md
+
+# Temporales
+*.log
+*.tmp
+*.swp

@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Vercel
+.vercel
+.vercel_build_output/
+
+# Flutter web build (si quieres subirlo, comenta esta línea)
+# /build/web/
