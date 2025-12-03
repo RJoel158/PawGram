@@ -19,6 +19,17 @@ class _CreatePostPageState extends State<CreatePostPage> {
   File? _imageFile;
   XFile? _pickedFile;
   bool _loading = false;
+  int _charCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _captionController.addListener(() {
+      setState(() {
+        _charCount = _captionController.text.length;
+      });
+    });
+  }
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -182,6 +193,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 const SizedBox(height: 24),
                 TextField(
                   controller: _captionController,
+                  maxLength: 150,
                   decoration: InputDecoration(
                     hintText: "Escribe algo sobre tu mascota...",
                     border: OutlineInputBorder(
@@ -189,6 +201,10 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     ),
                     filled: true,
                     fillColor: Colors.grey.shade50,
+                    counterText: '$_charCount/150',
+                    counterStyle: TextStyle(
+                      color: _charCount > 150 ? Colors.red : Colors.grey,
+                    ),
                   ),
                   maxLines: 4,
                 ),

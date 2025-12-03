@@ -15,14 +15,47 @@ class CommentsPage extends StatefulWidget {
 class _CommentsPageState extends State<CommentsPage> {
   final _commentController = TextEditingController();
   final _currentUser = FirebaseAuth.instance.currentUser;
+  int _charCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _commentController.addListener(() {
+      setState(() {
+        _charCount = _commentController.text.length;
+      });
+    });
+  }
 
   Future<void> _addComment() async {
-    if (_commentController.text.trim().isEmpty || _currentUser == null) return;
+    final text = _commentController.text.trim();
+    
+    if (text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ No puedes publicar un comentario vacío'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (text.length > 150) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✏️ El comentario no puede tener más de 150 caracteres'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (_currentUser == null) return;
 
     await CommentService.addComment(
       postId: widget.postId,
       userId: _currentUser.uid,
-      text: _commentController.text.trim(),
+      text: text,
     );
 
     _commentController.clear();
@@ -114,20 +147,35 @@ class _CommentsPageState extends State<CommentsPage> {
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _commentController,
-                      decoration: const InputDecoration(
-                        hintText: "Add a comment...",
-                        border: OutlineInputBorder(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _commentController,
+                          maxLength: 150,
+                          decoration: InputDecoration(
+                            hintText: "Agrega un comentario...",
+                            border: const OutlineInputBorder(),
+                            counterText: '$_charCount/150',
+                            counterStyle: TextStyle(
+                              color: _charCount > 150
+                                  ? Colors.red
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: _addComment,
+                      IconButton(
+                        icon: const Icon(Icons.send),
+                        color: _charCount > 0 && _charCount <= 150
+                            ? Colors.brown.shade600
+                            : Colors.grey,
+                        onPressed: _addComment,
+                      ),
+                    ],
                   ),
                 ],
               ),

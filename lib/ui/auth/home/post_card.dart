@@ -84,6 +84,38 @@ class _PostCardState extends State<PostCard>
     }
   }
 
+  void _openImageFullScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: CachedNetworkImage(
+                imageUrl: widget.postImageUrl,
+                fit: BoxFit.contain,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+                errorWidget: (context, url, error) => const Center(
+                  child: Icon(Icons.error, color: Colors.white, size: 50),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -105,9 +137,10 @@ class _PostCardState extends State<PostCard>
           subtitle: const Text("🐾 Pet Lover"),
         ),
 
-        // ----- IMAGE CON DOBLE TAP -----
+        // ----- IMAGE CON DOBLE TAP Y CLIC -----
         GestureDetector(
           onDoubleTap: _handleDoubleTap,
+          onTap: () => _openImageFullScreen(context),
           child: Stack(
             alignment: Alignment.center,
             children: [
