@@ -163,7 +163,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 child: _loading
                                     ? const CircularProgressIndicator(
-                                        color: Colors.white)
+                                        color: Colors.white,
+                                      )
                                     : const Text(
                                         "Iniciar Sesión",
                                         style: TextStyle(fontSize: 16),
@@ -176,14 +177,16 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => RegisterPage()),
+                                    builder: (_) => RegisterPage(),
+                                  ),
                                 );
                               },
                               child: Text(
                                 "¿No tienes cuenta? Regístrate aquí",
                                 style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w600)
-                                    .copyWith(color: AppColors.softBrown),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ).copyWith(color: AppColors.softBrown),
                               ),
                             ),
                           ],
@@ -207,21 +210,21 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                           child: ClipOval(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Image.asset(
-                                  'web/icons/pawgram.png',
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    // Si no encuentra la imagen, muestra el icono
-                                    return Icon(
-                                      Icons.pets,
-                                      size: 60,
-                                      color: AppColors.softBrown,
-                                    );
-                                  },
-                                ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Image.asset(
+                                'web/icons/pawgram.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Si no encuentra la imagen, muestra el icono
+                                  return Icon(
+                                    Icons.pets,
+                                    size: 60,
+                                    color: AppColors.softBrown,
+                                  );
+                                },
                               ),
+                            ),
                           ),
                         ),
                       ),

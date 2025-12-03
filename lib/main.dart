@@ -36,25 +36,36 @@ class MyApp extends StatelessWidget {
           onSurface: AppColors.onCream,
         ),
         scaffoldBackgroundColor: AppColors.cream,
-        appBarTheme: AppBarTheme(centerTitle: false, elevation: 0, iconTheme: const IconThemeData(color: AppColors.softRed)),
+        appBarTheme: AppBarTheme(
+          centerTitle: false,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: AppColors.softRed),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.softBrown,
             foregroundColor: AppColors.onPaddington,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.paddingtonBlue,
-            side: BorderSide(color: AppColors.paddingtonBlue.withValues(alpha: 0.12)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            side: BorderSide(
+              color: AppColors.paddingtonBlue.withValues(alpha: 0.12),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
-        textTheme: GoogleFonts.baloo2TextTheme(ThemeData.light().textTheme).apply(
-          bodyColor: AppColors.paddingtonBlue,
-          displayColor: AppColors.paddingtonBlue,
-        ),
+        textTheme: GoogleFonts.baloo2TextTheme(ThemeData.light().textTheme)
+            .apply(
+              bodyColor: AppColors.paddingtonBlue,
+              displayColor: AppColors.paddingtonBlue,
+            ),
         // Force icons to the soft red across the app and set AppBar icons
         iconTheme: const IconThemeData(color: AppColors.softRed),
       ),

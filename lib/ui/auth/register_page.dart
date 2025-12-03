@@ -132,8 +132,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             const SizedBox(height: 10),
                             Text(
                               "Crea tu cuenta",
-                              style: const TextStyle(fontSize: 16)
-                                  .copyWith(color: AppColors.muted),
+                              style: const TextStyle(
+                                fontSize: 16,
+                              ).copyWith(color: AppColors.muted),
                             ),
                             const SizedBox(height: 30),
                             TextField(
@@ -195,7 +196,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                                 child: _loading
                                     ? const CircularProgressIndicator(
-                                        color: Colors.white)
+                                        color: Colors.white,
+                                      )
                                     : const Text(
                                         "Crear Cuenta",
                                         style: TextStyle(fontSize: 16),
@@ -210,8 +212,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               child: Text(
                                 "¿Ya tienes cuenta? Inicia sesión",
                                 style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w600)
-                                    .copyWith(color: AppColors.softBrown),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ).copyWith(color: AppColors.softBrown),
                               ),
                             ),
                           ],

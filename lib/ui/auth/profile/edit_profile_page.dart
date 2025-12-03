@@ -37,7 +37,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _nameController = TextEditingController(text: widget.currentUsername);
     _bioController = TextEditingController(text: widget.currentBio);
     _bioCharCount = widget.currentBio.length;
-    
+
     _bioController.addListener(() {
       setState(() {
         _bioCharCount = _bioController.text.length;
@@ -124,9 +124,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
         setState(() => _loading = false);
       }
     }
